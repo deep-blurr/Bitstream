@@ -4,8 +4,7 @@ The goal of this project is to deeply understand the BitTorrent protocol by impl
 
 ## 🚀 Features (planned)
 
-- ✅ Bencode encoder/decoder  
-- 🔄 Torrent metadata parsing  
+- ✅ Torrent metadata parsing   
 - 🌐 Peer discovery and handshake  
 - 📡 Piece download and verification  
 - 📁 File storage and management  
@@ -13,7 +12,7 @@ The goal of this project is to deeply understand the BitTorrent protocol by impl
 
 ## 📂 Project Structure
 Bitstream/  
-├── bencode/ # Bencode library (encoding/decoding)  
+├── include/ # Header includes   
 ├── src/ # Core client implementation  
 ├── tests/ # Unit tests  
 └── README.md # Project documentation  
