@@ -12,11 +12,11 @@ The goal of this project is to deeply understand the BitTorrent protocol by impl
 - ⚡ CLI interface for managing torrents  
 
 ## 📂 Project Structure
-Bitstream/
-├── bencode/ # Bencode library (encoding/decoding)
-├── src/ # Core client implementation
-├── tests/ # Unit tests
-└── README.md # Project documentation
+Bitstream/  
+├── bencode/ # Bencode library (encoding/decoding)  
+├── src/ # Core client implementation  
+├── tests/ # Unit tests  
+└── README.md # Project documentation  
 
 ## 🎯 Goals
 - Build a fully functional CLI torrent client.  
