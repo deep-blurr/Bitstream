@@ -34,6 +34,24 @@ static std::string url_encode(const std::string &data) {
   return encoded.str();
 }
 
+static std::vector<PeerInfo> parse_dictionary_peers(const bencode::list& peers_list) {
+    std::vector<PeerInfo> peers;
+    for (const auto& peer_data : peers_list) {
+        try {
+            
+            const auto& peer_dict = std::get<bencode::dict>(peer_data);
+
+            if (peer_dict.count("ip") && peer_dict.count("port")) {
+                const std::string& ip = std::get<bencode::string>(peer_dict.at("ip"));
+                const uint16_t port = static_cast<uint16_t>(std::get<bencode::integer>(peer_dict.at("port")));
+                peers.push_back({ip, port});
+            }
+        } catch (const std::bad_variant_access& e) {
+        }
+    }
+    return peers;
+}
+
 static std::vector<PeerInfo> parse_compact_peers(const std::string &peers_str) {
   std::vector<PeerInfo> peers;
   if (peers_str.length() % 6 != 0) {
@@ -101,12 +119,23 @@ std::vector<PeerInfo> get_peers(const TorrentFile &torrent) {
                << "&left=" << torrent.total_length << "&compact=1";
   std::string full_path = query_stream.str();
 
+  std::string host;
+  int port = (scheme == "https") ? 443 : 80;
+
+  size_t colon_pos = host_port.find(':');
+  if (colon_pos != std::string::npos){
+    host = host_port.substr(0, colon_pos);
+    port = std::stoi(host_port.substr(colon_pos + 1));
+  } else {
+    host = host_port;
+  }
+
   httplib::Result res;
   if (scheme == "https") {
-    httplib::SSLClient cli(host_port);
+    httplib::SSLClient cli(host, port);
     res = perform_tracker_request(cli, full_path);
   } else if (scheme == "http") {
-    httplib::Client cli(host_port);
+    httplib::Client cli(host, port);
     res = perform_tracker_request(cli, full_path);
   } else {
     throw std::runtime_error("Unsupported scheme: '" + scheme +
@@ -139,13 +168,9 @@ std::vector<PeerInfo> get_peers(const TorrentFile &torrent) {
 
   const auto &peers_val = response_dict.at("peers");
   if (std::holds_alternative<bencode::string>(peers_val)) {
-    // This is the compact format we expect
     return parse_compact_peers(std::get<bencode::string>(peers_val));
   } else if (std::holds_alternative<bencode::list>(peers_val)) {
-    // This is the non-compact format, or an empty list for an unknown torrent.
-    // For our MVP, we will consider this a successful response with 0 peers.
-    // A full client would parse this list of dictionaries.
-    return {}; // Return an empty vector of peers
+    return parse_dictionary_peers(std::get<bencode::list>(peers_val));
   } else {
     throw std::runtime_error("Unexpected data type for 'peers' key.");
   }
