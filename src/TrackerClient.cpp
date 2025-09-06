@@ -34,22 +34,24 @@ static std::string url_encode(const std::string &data) {
   return encoded.str();
 }
 
-static std::vector<PeerInfo> parse_dictionary_peers(const bencode::list& peers_list) {
-    std::vector<PeerInfo> peers;
-    for (const auto& peer_data : peers_list) {
-        try {
-            
-            const auto& peer_dict = std::get<bencode::dict>(peer_data);
+static std::vector<PeerInfo>
+parse_dictionary_peers(const bencode::list &peers_list) {
+  std::vector<PeerInfo> peers;
+  for (const auto &peer_data : peers_list) {
+    try {
 
-            if (peer_dict.count("ip") && peer_dict.count("port")) {
-                const std::string& ip = std::get<bencode::string>(peer_dict.at("ip"));
-                const uint16_t port = static_cast<uint16_t>(std::get<bencode::integer>(peer_dict.at("port")));
-                peers.push_back({ip, port});
-            }
-        } catch (const std::bad_variant_access& e) {
-        }
+      const auto &peer_dict = std::get<bencode::dict>(peer_data);
+
+      if (peer_dict.count("ip") && peer_dict.count("port")) {
+        const std::string &ip = std::get<bencode::string>(peer_dict.at("ip"));
+        const uint16_t port = static_cast<uint16_t>(
+            std::get<bencode::integer>(peer_dict.at("port")));
+        peers.push_back({ip, port});
+      }
+    } catch (const std::bad_variant_access &e) {
     }
-    return peers;
+  }
+  return peers;
 }
 
 static std::vector<PeerInfo> parse_compact_peers(const std::string &peers_str) {
@@ -123,7 +125,7 @@ std::vector<PeerInfo> get_peers(const TorrentFile &torrent) {
   int port = (scheme == "https") ? 443 : 80;
 
   size_t colon_pos = host_port.find(':');
-  if (colon_pos != std::string::npos){
+  if (colon_pos != std::string::npos) {
     host = host_port.substr(0, colon_pos);
     port = std::stoi(host_port.substr(colon_pos + 1));
   } else {
