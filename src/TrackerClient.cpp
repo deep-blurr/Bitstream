@@ -11,7 +11,7 @@
 #include <stdexcept>
 
 static std::string generate_peer_id() {
-  std::string peer_id = "-BC0001-";
+  std::string peer_id = "-TR0001-";
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_int_distribution<> distrib(0, 255);

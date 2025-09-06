@@ -5,7 +5,7 @@ The goal of this project is to deeply understand the BitTorrent protocol by impl
 ## 🚀 Features (planned)
 
 - ✅ Torrent metadata parsing   
-- 🌐 Peer discovery and handshake  
+- ✅ Peer discovery and handshake  
 - 📡 Piece download and verification  
 - 📁 File storage and management  
 - ⚡ CLI interface for managing torrents  
